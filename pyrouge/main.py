@@ -5,7 +5,6 @@ import tcod
 
 from pyrouge.engine import Engine
 from pyrouge.entity_factory import player_factory
-from pyrouge.input_handlers import EventHandler
 from pyrouge.procgen import generate_dungeon
 
 
@@ -26,23 +25,21 @@ def main() -> None:
         "pyrouge/resources/dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    event_handler = EventHandler()
-
     player = copy.deepcopy(player_factory)
 
-    game_map = generate_dungeon(
+    engine = Engine(player=player)
+
+    engine.game_map = generate_dungeon(
         max_rooms=max_rooms,
         room_min_size=room_min_size,
         room_max_size=room_max_size,
         map_width=map_width,
         map_height=map_height,
         max_monsters_per_room=max_monsters_per_room,
-        player=player
+        engine=engine
     )
 
-    engine = Engine(event_handler=event_handler,
-                    game_map=game_map,
-                    player=player)
+    engine.update_fov()
 
     with tcod.context.new_terminal(
         screen_width,
@@ -55,8 +52,7 @@ def main() -> None:
             screen_width, screen_height, order="F")
         while True:
             engine.render(console=root_console, context=context)
-            events = tcod.event.wait()
-            engine.handle_events(events)
+            engine.event_handler.handle_events()
 
 
 if __name__ == "__main__":
