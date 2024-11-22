@@ -66,9 +66,6 @@ class MeleeAction(ActionWithDirection):
 
 
 class MovementAction(ActionWithDirection):
-    def __init__(self, dx: int, dy: int):
-        super().__init__(dx, dy)
-
     def perform(self) -> None:
         dest_x, dest_y = self.dest_xy
 
