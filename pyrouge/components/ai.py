@@ -6,14 +6,12 @@ import numpy as np  # type: ignore
 import tcod
 
 from pyrouge.actions import Action, MeleeAction, MovementAction, WaitAction
-from pyrouge.components.base_component import BaseComponent
 
 if TYPE_CHECKING:
     from pyrouge.entity import Actor
 
 
-class BaseAI(Action, BaseComponent):
-    entity: Actor
+class BaseAI(Action):
 
     def perform(self) -> None:
         raise NotImplementedError()
