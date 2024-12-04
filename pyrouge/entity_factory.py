@@ -11,7 +11,7 @@ player_factory = Actor(
     char="@",
     color=(255, 255, 255),
     name="Player",
-    ai_cls=None,
+    ai_cls=HostileEnemy,
     fighter=Fighter(hp=30, defense=2, power=5),
     inventory=Inventory(capacity=26),
 )

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 import pyrouge.color
 from pyrouge.components.base_component import BaseComponent
-from pyrouge.input_handlers import GameOverEventHandler
 from pyrouge.render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -26,10 +25,8 @@ class Fighter(BaseComponent):
 
     @hp.setter
     def hp(self, value: int) -> None:
-        original_hp = self._hp
         self._hp = max(0, min(value, self.max_hp))
-
-        if self._hp == 0 and original_hp > 0:
+        if self._hp == 0 and self.parent.ai:
             self.die()
 
     def heal(self, amount: int) -> int:
@@ -54,7 +51,6 @@ class Fighter(BaseComponent):
         if self.engine.player is self.parent:
             death_message = "You died!"
             death_message_color = pyrouge.color.player_die
-            self.engine.event_handler = GameOverEventHandler(self.engine)
         else:
             death_message = f"{self.parent.name} is dead!"
             death_message_color = pyrouge.color.enemy_die
