@@ -12,7 +12,7 @@ from pyrouge.procgen import generate_dungeon
 
 def main() -> None:
     screen_width = 80
-    screen_height = 50
+    screen_height = 51
 
     map_width = 80
     map_height = 43
