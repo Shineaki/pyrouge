@@ -7,7 +7,7 @@ import pyrouge.entity_factory
 from pyrouge.engine import Engine
 from pyrouge.entity import Entity
 from pyrouge.game_map import GameMap
-from pyrouge.tile_types import floor
+from pyrouge.tile_types import down_stairs, floor
 
 
 class RectangularRoom:
@@ -108,6 +108,8 @@ def generate_dungeon(
 
     rooms: list[RectangularRoom] = []
 
+    center_of_last_room = (0, 0)
+
     for _ in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
         room_height = random.randint(room_min_size, room_max_size)
@@ -134,9 +136,14 @@ def generate_dungeon(
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = floor
 
+            center_of_last_room = new_room.center
+
         place_entities(new_room, dungeon,
                        max_monsters_per_room,
                        max_items_per_room)
+
+        dungeon.tiles[center_of_last_room] = down_stairs
+        dungeon.downstairs_location = center_of_last_room
 
         # Finally, append the new room to the list.
         rooms.append(new_room)

@@ -8,17 +8,18 @@ from tcod.console import Console
 from tcod.map import compute_fov
 
 import pyrouge.exceptions
+import pyrouge.render_functions
 from pyrouge.game_map import GameMap
 from pyrouge.message_log import MessageLog
-from pyrouge.render_functions import render_bar, render_names_at_mouse_location
 
 if TYPE_CHECKING:
     from pyrouge.entity import Actor
-    from pyrouge.game_map import GameMap
+    from pyrouge.game_map import GameMap, GameWorld
 
 
 class Engine:
     game_map: GameMap
+    game_world: GameWorld
 
     def __init__(self, player: Actor):
         self.player = player
@@ -55,12 +56,19 @@ class Engine:
         self.message_log.render(console=console, x=21,
                                 y=45, width=40, height=5)
 
-        render_bar(
+        pyrouge.render_functions.render_bar(
             console=console,
             current_value=self.player.fighter.hp,
             maximum_value=self.player.fighter.max_hp,
             total_width=20,
         )
 
-        render_names_at_mouse_location(
-            console=console, x=21, y=44, engine=self)
+        pyrouge.render_functions.render_dungeon_level(
+            console=console,
+            dungeon_level=self.game_world.current_floor,
+            location=(0, 47),
+        )
+
+        pyrouge.render_functions.render_names_at_mouse_location(
+            console=console, x=21, y=44, engine=self
+        )

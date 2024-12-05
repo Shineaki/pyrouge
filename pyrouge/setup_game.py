@@ -14,7 +14,7 @@ import pyrouge.color
 import pyrouge.input_handlers
 from pyrouge.engine import Engine
 from pyrouge.entity_factory import player_factory
-from pyrouge.procgen import generate_dungeon
+from pyrouge.game_map import GameWorld
 
 # Load the background image and remove the alpha channel.
 background_image = tcod.image.load(
@@ -37,7 +37,8 @@ def new_game() -> Engine:
 
     engine = Engine(player=player)
 
-    engine.game_map = generate_dungeon(
+    engine.game_world = GameWorld(
+        engine=engine,
         max_rooms=max_rooms,
         room_min_size=room_min_size,
         room_max_size=room_max_size,
@@ -45,8 +46,9 @@ def new_game() -> Engine:
         map_height=map_height,
         max_monsters_per_room=max_monsters_per_room,
         max_items_per_room=max_items_per_room,
-        engine=engine,
     )
+
+    engine.game_world.generate_floor()
     engine.update_fov()
 
     engine.message_log.add_message(
