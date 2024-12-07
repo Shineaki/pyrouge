@@ -123,6 +123,8 @@ class EventHandler(BaseEventHandler):
             if not self.engine.player.is_alive:
                 # The player was killed sometime during or after the action.
                 return GameOverEventHandler(self.engine)
+            elif self.engine.player.level.requires_level_up:
+                return LevelUpEventHandler(self.engine)
             # Return to the main handler.
             return MainGameEventHandler(self.engine)
         return self
@@ -150,7 +152,7 @@ class EventHandler(BaseEventHandler):
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
             self.engine.mouse_location = event.tile.x, event.tile.y
 
-    def on_render(self, console: tcod.Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         self.engine.render(console)
 
 
@@ -180,6 +182,76 @@ class AskUserEventHandler(EventHandler):
         By default this returns to the main event handler.
         """
         return MainGameEventHandler(self.engine)
+
+
+class LevelUpEventHandler(AskUserEventHandler):
+    TITLE = "Level Up"
+
+    def on_render(self, console: tcod.console.Console) -> None:
+        super().on_render(console)
+
+        if self.engine.player.x <= 40:
+            x = 79 - 35  # 35 = Frame width
+        else:
+            x = 1
+
+        console.draw_frame(
+            x=x,
+            y=0,
+            width=35,
+            height=8,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+        console.print(x=x + 1, y=1, string="Congratulations! You level up!")
+        console.print(x=x + 1, y=2, string="Select an attribute to increase.")
+
+        console.print(
+            x=x + 1,
+            y=4,
+            string=f"a) Constitution (+20 HP, from {self.engine.player.fighter.max_hp})",
+        )
+        console.print(
+            x=x + 1,
+            y=5,
+            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.power})",
+        )
+        console.print(
+            x=x + 1,
+            y=6,
+            string=f"c) Agility (+1 defense, from {self.engine.player.fighter.defense})",
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        player = self.engine.player
+        key = event.sym
+        index = key - tcod.event.KeySym.a
+
+        if 0 <= index <= 2:
+            if index == 0:
+                player.level.increase_max_hp()
+            elif index == 1:
+                player.level.increase_power()
+            else:
+                player.level.increase_defense()
+        else:
+            self.engine.message_log.add_message(
+                "Invalid entry.", pyrouge.color.invalid)
+
+            return None
+
+        return super().ev_keydown(event)
+
+    def ev_mousebuttondown(
+        self, event: tcod.event.MouseButtonDown
+    ) -> Optional[ActionOrHandler]:
+        """
+        Don't allow the player to click to exit the menu, like normal.
+        """
+        return None
 
 
 class InventoryEventHandler(AskUserEventHandler):
@@ -276,12 +348,12 @@ class SelectIndexHandler(AskUserEventHandler):
         player = self.engine.player
         engine.mouse_location = player.x, player.y
 
-    def on_render(self, console: tcod.Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Highlight the tile under the cursor."""
         super().on_render(console)
         x, y = self.engine.mouse_location
-        console.tiles_rgb["bg"][x, y] = pyrouge.color.white
-        console.tiles_rgb["fg"][x, y] = pyrouge.color.black
+        console.rgb["bg"][x, y] = pyrouge.color.white
+        console.rgb["fg"][x, y] = pyrouge.color.black
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         """Check for key movement or confirmation keys."""
@@ -356,7 +428,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         self.radius = radius
         self.callback = callback
 
-    def on_render(self, console: tcod.Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """Highlight the tile under the cursor."""
         super().on_render(console)
 

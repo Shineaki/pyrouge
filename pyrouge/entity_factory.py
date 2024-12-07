@@ -5,6 +5,7 @@ from pyrouge.components.consumable import (ConfusionConsumable,
                                            LightningDamageConsumable)
 from pyrouge.components.fighter import Fighter
 from pyrouge.components.inventory import Inventory
+from pyrouge.components.level import Level
 from pyrouge.entity import Actor, Item
 
 player_factory = Actor(
@@ -14,6 +15,7 @@ player_factory = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=30, defense=2, power=5),
     inventory=Inventory(capacity=26),
+    level=Level(level_up_base=200),
 )
 
 orc = Actor(
@@ -23,6 +25,7 @@ orc = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=10, defense=0, power=3),
     inventory=Inventory(capacity=0),
+    level=Level(xp_given=35),
 )
 
 troll = Actor(
@@ -32,6 +35,7 @@ troll = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=16, defense=1, power=4),
     inventory=Inventory(capacity=0),
+    level=Level(xp_given=100),
 )
 
 health_potion = Item(
