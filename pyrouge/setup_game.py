@@ -11,6 +11,7 @@ import tcod
 from tcod import libtcodpy
 
 import pyrouge.color
+import pyrouge.entity_factory
 import pyrouge.input_handlers
 from pyrouge.engine import Engine
 from pyrouge.entity_factory import player_factory
@@ -49,6 +50,19 @@ def new_game() -> Engine:
     engine.message_log.add_message(
         "Hello and welcome, adventurer, to yet another dungeon!", pyrouge.color.welcome_text
     )
+
+    dagger = copy.deepcopy(pyrouge.entity_factory.dagger)
+    leather_armor = copy.deepcopy(pyrouge.entity_factory.leather_armor)
+
+    dagger.parent = player.inventory
+    leather_armor.parent = player.inventory
+
+    player.inventory.items.append(dagger)
+    player.equipment.toggle_equip(dagger, add_message=False)
+
+    player.inventory.items.append(leather_armor)
+    player.equipment.toggle_equip(leather_armor, add_message=False)
+
     return engine
 
 

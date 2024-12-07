@@ -5,11 +5,9 @@ import tcod
 
 import pyrouge.entity_factory
 from pyrouge.engine import Engine
+from pyrouge.entity import Entity
 from pyrouge.game_map import GameMap
 from pyrouge.tile_types import down_stairs, floor
-
-if TYPE_CHECKING:
-    from pyrouge.entity import Entity
 
 max_items_by_floor = [
     (1, 1),
@@ -25,8 +23,8 @@ max_monsters_by_floor = [
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
     0: [(pyrouge.entity_factory.health_potion, 35)],
     2: [(pyrouge.entity_factory.confusion_scroll, 10)],
-    4: [(pyrouge.entity_factory.lightning_scroll, 25)],
-    6: [(pyrouge.entity_factory.fireball_scroll, 25)],
+    4: [(pyrouge.entity_factory.lightning_scroll, 25), (pyrouge.entity_factory.sword, 5)],
+    6: [(pyrouge.entity_factory.fireball_scroll, 25), (pyrouge.entity_factory.chain_mail, 15)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
